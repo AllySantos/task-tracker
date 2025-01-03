@@ -1,17 +1,11 @@
 from classes import Status
-from classes import Task
-from classes import Persistence
+from classes import TaskManager
 
 def main():
 
-    task = Task()
-    task.create(1, 'Nova Task', Status.TO_DO)
-    task.print()
-
-    task.update(Status.DONE)
-    task.print()
-
-    Persistence().save_task(task)
+    manager = TaskManager()
+    manager.create_task(1, 'Nova Task')
+    manager.list_tasks()
 
 if __name__ == '__main__':
     main()

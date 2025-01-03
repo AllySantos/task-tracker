@@ -1,6 +1,7 @@
 import datetime
 import time
 import os
+import json
 
 
 class Status:
@@ -20,17 +21,26 @@ class Status:
 
 class Task:
 
-    datetime_format = '%d/%m/%Y-%H:%M:%S'
+
 
     def __init__(self):
         self.identification = self.description = self.status = self.created_at = self.updated_at = None
 
-    def create(self, identification, description, status):
+    def create(self, identification, description):
         self.identification = identification
         self.description = description
         self.status = Status.TO_DO
         self.created_at = datetime.datetime.now()
         self.updated_at = '-'
+
+        return self
+
+    def set(self, identification, description, status, created_at, updated_at):
+        self.identification = identification
+        self.description = description
+        self.status = status
+        self.created_at = self.datetime_to_string(created_at)
+        self.updated_at = self.datetime_to_string(updated_at)
 
         return self
 
@@ -41,40 +51,78 @@ class Task:
 
         return self
 
-    def print(self):
+    def to_string(self):
         status = Status().get_name(self.status)
 
-        created_at = datetime.datetime.strftime(self.created_at, self.datetime_format)
+        created_at = self.datetime_to_string(self.created_at)
+        updated_at = self.datetime_to_string(self.updated_at)
 
-        updated_at = self.updated_at
-        if type(updated_at) != str:
-            updated_at = datetime.datetime.strftime(self.updated_at, self.datetime_format)
+        return f"TASK\nID: {self.identification}\tDESCRIPTION: {self.description}\tSTATUS: {status}\tCREATED AT: {created_at}\tUPDATED AT: {updated_at}"
 
-        print(f"TASK\nID: {self.identification}\tDESCRIPTION: {self.description}\tSTATUS: {status}\tCREATED AT: {created_at}\tUPDATED AT: {updated_at}")
+
 
     def to_dict(self):
-        task_dict = {'identification': self.identification,
-                     'description': self.description,
-                     'status': self.status,
-                     'created_at': self.status,
-                     'updated_at':self.updated_at}
+        created_at = self.datetime_to_string(self.created_at)
+        updated_at = self.datetime_to_string(self.updated_at)
+
+        task_dict = {"identification": self.identification,
+                     "description": self.description,
+                     "status": self.status,
+                     "created_at": created_at,
+                     "updated_at":updated_at}
         return task_dict
 
+    def datetime_to_string(self, date):
+        datetime_format = '%d/%m/%Y-%H:%M:%S'
+        if type(date) != str and type(date) is not None:
+            return datetime.datetime.strftime(date, datetime_format)
+        else:
+            return date
 
-class Persistence():
 
-    file_path = fr'{os.getcwd()}\data\database.json'
+class Persistence:
 
     def __init__(self):
-        pass
-
+        self.file_path = fr'{os.getcwd()}\data\database.json'
 
     def save_task(self, task):
         task_dict = task.to_dict()
 
         file = open(file=self.file_path,mode='a', encoding='utf-8')
+
+        task_dict = str(task_dict).replace("\'", "\"")
         file.write(task_dict)
+        file.write("\n")
         file.close()
+
+    def load_task(self):
+        file = open(file=self.file_path,mode='r', encoding='utf-8')
+        file_data = file.readlines()
+
+        tasks = []
+
+        for line in file_data:
+            task = json.loads(line)
+            tasks.append(task)
+        return tasks
+
+class TaskManager:
+
+    def __init__(self):
+        self.persistence = Persistence()
+
+    def create_task(self, identification, description):
+        task = Task()
+        task.create(identification, description)
+
+        self.persistence.save_task(task)
+
+    def list_tasks(self):
+        tasks = self.persistence.load_task()
+        for task in tasks:
+            task = Task().set(task['identification'], task['description'], task['status'], task['created_at'], task['updated_at'])
+            print(task.to_string())
+
 
 
 
