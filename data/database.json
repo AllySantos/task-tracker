@@ -1,13 +1,4 @@
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "02/01/2025-21:24:41", "updated_at": "-"}
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "02/01/2025-21:24:53", "updated_at": "-"}
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "02/01/2025-21:25:07", "updated_at": "-"}
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "02/01/2025-21:26:19", "updated_at": "-"}
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "02/01/2025-21:26:35", "updated_at": "-"}
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:05:25", "updated_at": "-"}
-{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:06:08", "updated_at": "-"}
-{"identification": 2, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:08:05", "updated_at": "-"}
-{"identification": 3, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:08:06", "updated_at": "-"}
-{"identification": 4, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:08:08", "updated_at": "-"}
-{"identification": 5, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:19:10", "updated_at": "-"}
-{"identification": 6, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:19:39", "updated_at": "-"}
-{"identification": 7, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:19:51", "updated_at": "-"}
+{"identification": 4, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:49:47", "updated_at": "-"}
+{"identification": 2, "description": "Nova Task", "status": 2, "created_at": "03/01/2025-23:49:44", "updated_at": "03/01/2025-23:49:47"}
+{"identification": 1, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:49:27", "updated_at": "-"}
+{"identification": 3, "description": "Nova Task", "status": 0, "created_at": "03/01/2025-23:49:46", "updated_at": "-"}

@@ -42,13 +42,6 @@ class Task:
 
         return self
 
-    def update(self, status):
-        time.sleep(1)
-        self.status = status
-        self.updated_at = datetime.datetime.now()
-
-        return self
-
     def to_string(self):
         status = Status().get_name(self.status)
 
@@ -75,7 +68,6 @@ class Task:
         else:
             return date
 
-
 class Persistence:
 
     def __init__(self):
@@ -93,22 +85,35 @@ class Persistence:
 
     def update_task(self, task):
         tasks = self.load_task()
-
         new_tasks = []
+
         for item_task in tasks:
-            if item_task['identification'] == task['identification']:
+            if item_task['identification'] == task.identification:
                 new_tasks.append(task)
             else:
+                item_task = self.json_to_task(item_task)
                 new_tasks.append(item_task)
 
         self.save_all_tasks(new_tasks)
 
-
     def save_all_tasks(self, tasks):
+        file_text = ''
+        for task in tasks:
+            task_dict = str(task.to_dict()).replace("\'", "\"")
+            file_text = task_dict + '\n' + file_text
 
-        tasks = str(tasks)
-        print(tasks)
+        self.clean_file()
+        self.write_all_file(file_text)
 
+
+    def clean_file(self):
+        file = open(file=self.file_path,mode='w', encoding='utf-8')
+        file.close()
+
+    def write_all_file(self, text):
+        file = open(file=self.file_path,mode='w', encoding='utf-8')
+        file.write(text)
+        file.close()
 
     def load_task(self):
         file = open(file=self.file_path,mode='r', encoding='utf-8')
@@ -121,6 +126,18 @@ class Persistence:
             tasks.append(task)
         return tasks
 
+    def json_to_task(self, json):
+        task = Task().set(json['identification'], json['description'], json['status'], json['created_at'], json['updated_at'])
+        return task
+
+    def get_task_by_id(self, identification):
+        tasks = self.load_task()
+        for item_task in tasks:
+            item_task = self.json_to_task(item_task)
+            if item_task.identification == identification:
+                return item_task
+
+        return None
 
 class TaskManager:
 
@@ -137,8 +154,12 @@ class TaskManager:
 
     def generate_task_id(self):
         tasks = self.persistence.load_task()
-        last_task = tasks[-1]
-        new_id = int(last_task['identification']) + 1
+
+        if len(tasks) > 0:
+            last_task = tasks[0]
+            new_id = int(last_task['identification']) + 1
+        else:
+            new_id = 1
         return new_id
 
     def list_tasks(self):
@@ -147,11 +168,22 @@ class TaskManager:
             task = Task().set(task['identification'], task['description'], task['status'], task['created_at'], task['updated_at'])
             print(task.to_string())
 
+
     def update_task_status(self, identification, new_status):
-        task = Task()
-        task.set(identification, '', new_status, '', '')
-        print(task)
-        self.persistence.update_task(task)
+
+        task_updated = self.persistence.get_task_by_id(identification)
+        task_updated.status = new_status
+        task_updated.updated_at = datetime.datetime.now()
+
+        self.persistence.update_task(task_updated)
+
+    def update_task_description(self, identification, description):
+
+        task_updated = self.persistence.get_task_by_id(identification)
+        task_updated.description = description
+        task_updated.updated_at = datetime.datetime.now()
+
+        self.persistence.update_task(task_updated)
 
 
 
