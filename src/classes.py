@@ -18,6 +18,15 @@ class Status:
             case _:
                 return 'DONE'
 
+    def get_number(self, status):
+        match status:
+            case 'TO-DO':
+                return self.TO_DO
+            case 'IN_PROGRESS':
+                return self.IN_PROGRESS
+            case _:
+                return self.DONE
+
 
 class Task:
 
@@ -48,7 +57,7 @@ class Task:
         created_at = self.datetime_to_string(self.created_at)
         updated_at = self.datetime_to_string(self.updated_at)
 
-        return f"TASK\nID: {self.identification}\tDESCRIPTION: {self.description}\tSTATUS: {status}\tCREATED AT: {created_at}\tUPDATED AT: {updated_at}"
+        return f"ID: {self.identification}\t|\tDESCRIPTION: {self.description}\t|\tSTATUS: {status}\t|\tCREATED AT: {created_at}\t|\tUPDATED AT: {updated_at}"
 
     def to_dict(self):
         created_at = self.datetime_to_string(self.created_at)
@@ -141,6 +150,11 @@ class Persistence:
             tasks.append(task)
         return tasks
 
+    def filter_task_by_status(self, status):
+        tasks = self.load_task()
+        filtered_list = [self.json_to_task(item) for item in tasks if item['status'] == status]
+        return filtered_list
+
     def json_to_task(self, json):
         task = Task().set(json['identification'], json['description'], json['status'], json['created_at'], json['updated_at'])
         return task
@@ -215,6 +229,14 @@ class TaskManager:
             print(f'Task with ID {identification} was not found')
         else:
             self.persistence.delete_task(task_deleted)
+
+    def filter_task_by_status(self, status):
+
+        status = Status().get_number(status)
+
+        filtered_list = self.persistence.filter_task_by_status(status)
+        for item in filtered_list:
+            print(item.to_string())
 
 
 
