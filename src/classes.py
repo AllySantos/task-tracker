@@ -21,8 +21,6 @@ class Status:
 
 class Task:
 
-
-
     def __init__(self):
         self.identification = self.description = self.status = self.created_at = self.updated_at = None
 
@@ -59,8 +57,6 @@ class Task:
 
         return f"TASK\nID: {self.identification}\tDESCRIPTION: {self.description}\tSTATUS: {status}\tCREATED AT: {created_at}\tUPDATED AT: {updated_at}"
 
-
-
     def to_dict(self):
         created_at = self.datetime_to_string(self.created_at)
         updated_at = self.datetime_to_string(self.updated_at)
@@ -95,6 +91,25 @@ class Persistence:
         file.write("\n")
         file.close()
 
+    def update_task(self, task):
+        tasks = self.load_task()
+
+        new_tasks = []
+        for item_task in tasks:
+            if item_task['identification'] == task['identification']:
+                new_tasks.append(task)
+            else:
+                new_tasks.append(item_task)
+
+        self.save_all_tasks(new_tasks)
+
+
+    def save_all_tasks(self, tasks):
+
+        tasks = str(tasks)
+        print(tasks)
+
+
     def load_task(self):
         file = open(file=self.file_path,mode='r', encoding='utf-8')
         file_data = file.readlines()
@@ -106,22 +121,37 @@ class Persistence:
             tasks.append(task)
         return tasks
 
+
 class TaskManager:
 
     def __init__(self):
         self.persistence = Persistence()
 
-    def create_task(self, identification, description):
+    def create_task(self,description):
         task = Task()
+        identification = self.generate_task_id()
+
         task.create(identification, description)
 
         self.persistence.save_task(task)
+
+    def generate_task_id(self):
+        tasks = self.persistence.load_task()
+        last_task = tasks[-1]
+        new_id = int(last_task['identification']) + 1
+        return new_id
 
     def list_tasks(self):
         tasks = self.persistence.load_task()
         for task in tasks:
             task = Task().set(task['identification'], task['description'], task['status'], task['created_at'], task['updated_at'])
             print(task.to_string())
+
+    def update_task_status(self, identification, new_status):
+        task = Task()
+        task.set(identification, '', new_status, '', '')
+        print(task)
+        self.persistence.update_task(task)
 
 
 
