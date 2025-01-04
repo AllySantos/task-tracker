@@ -7,5 +7,6 @@ def main():
     manager.create_task('Nova Task')
     # manager.list_tasks()
     manager.update_task_status(2, 2)
+    manager.delete_task(3)
 if __name__ == '__main__':
     main()

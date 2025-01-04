@@ -96,11 +96,26 @@ class Persistence:
 
         self.save_all_tasks(new_tasks)
 
+    def delete_task(self, task):
+        tasks = self.load_task()
+        new_tasks = []
+
+        for item_task in tasks:
+            if item_task['identification'] != task.identification:
+                item_task = self.json_to_task(item_task)
+                new_tasks.append(item_task)
+
+        self.save_all_tasks(new_tasks)
+
     def save_all_tasks(self, tasks):
         file_text = ''
         for task in tasks:
             task_dict = str(task.to_dict()).replace("\'", "\"")
-            file_text = task_dict + '\n' + file_text
+
+            if file_text == '':
+                file_text = task_dict + '\n'
+            else:
+                file_text = file_text + task_dict + '\n'
 
         self.clean_file()
         self.write_all_file(file_text)
@@ -131,6 +146,7 @@ class Persistence:
         return task
 
     def get_task_by_id(self, identification):
+
         tasks = self.load_task()
         for item_task in tasks:
             item_task = self.json_to_task(item_task)
@@ -156,7 +172,7 @@ class TaskManager:
         tasks = self.persistence.load_task()
 
         if len(tasks) > 0:
-            last_task = tasks[0]
+            last_task = tasks[-1]
             new_id = int(last_task['identification']) + 1
         else:
             new_id = 1
@@ -172,18 +188,33 @@ class TaskManager:
     def update_task_status(self, identification, new_status):
 
         task_updated = self.persistence.get_task_by_id(identification)
-        task_updated.status = new_status
-        task_updated.updated_at = datetime.datetime.now()
 
-        self.persistence.update_task(task_updated)
+        if task_updated is None:
+            print(f'Task with ID {identification} was not found')
+        else:
+            task_updated.status = new_status
+            task_updated.updated_at = datetime.datetime.now()
+
+            self.persistence.update_task(task_updated)
 
     def update_task_description(self, identification, description):
-
         task_updated = self.persistence.get_task_by_id(identification)
-        task_updated.description = description
-        task_updated.updated_at = datetime.datetime.now()
 
-        self.persistence.update_task(task_updated)
+        if task_updated is None:
+            print(f'Task with ID {identification} was not found')
+        else:
+            task_updated.description = description
+            task_updated.updated_at = datetime.datetime.now()
+
+            self.persistence.update_task(task_updated)
+
+    def delete_task(self, identification):
+
+        task_deleted = self.persistence.get_task_by_id(identification)
+        if task_deleted is None:
+            print(f'Task with ID {identification} was not found')
+        else:
+            self.persistence.delete_task(task_deleted)
 
 
 
