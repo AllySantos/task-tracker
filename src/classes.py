@@ -1,5 +1,4 @@
 import datetime
-import time
 import os
 import json
 
@@ -20,9 +19,9 @@ class Status:
 
     def get_number(self, status):
         match status:
-            case 'TO-DO':
+            case 'todo':
                 return self.TO_DO
-            case 'IN_PROGRESS':
+            case 'in-progress':
                 return self.IN_PROGRESS
             case _:
                 return self.DONE
@@ -39,15 +38,6 @@ class Task:
         self.created_at = created_at or datetime.datetime.now()
         self.updated_at = updated_at or '-'
 
-    @classmethod
-    def from_dict(cls, task_dict):
-        return cls(
-            identification=task_dict['identification'],
-            description=task_dict['description'],
-            status=task_dict['status'],
-            created_at=cls.string_to_datetime(task_dict['created_at']),
-            updated_at=cls.string_to_datetime(task_dict['updated_at']),
-        )
 
     def to_dict(self):
         return {
@@ -82,7 +72,7 @@ class Task:
 class Persistence:
 
     def __init__(self):
-        self.file_path = fr'{os.getcwd()}\data\database.json'
+        self.file_path = fr'{os.path.dirname(os.getcwd())}\data\database.json'
 
     def save_task(self, task):
         task_dict = task.to_dict()
@@ -119,7 +109,6 @@ class Persistence:
         file = open(file=self.file_path,mode='r', encoding='utf-8')
         file_data = file.readlines()
         tasks = []
-
         for line in file_data:
             task = json.loads(line)
             task = self.json_to_task(task)
@@ -161,6 +150,8 @@ class TaskManager:
         task = Task(identification=identification, description=description)
         self.persistence.save_task(task)
 
+        print(f'Task added successfully (ID: {identification})')
+
     def list_tasks(self):
         tasks = self.persistence.load_task()
         for task in tasks:
@@ -173,6 +164,8 @@ class TaskManager:
             task_updated.status = new_status
             task_updated.updated_at = datetime.datetime.now()
             self.persistence.update_task(task_updated)
+
+            print(f'Task updated successfully (STATUS: {new_status})')
         else:
             print(f'Task with ID {identification} was not found')
 
@@ -183,6 +176,8 @@ class TaskManager:
             task_updated.description = description
             task_updated.updated_at = datetime.datetime.now()
             self.persistence.update_task(task_updated)
+
+            print(f'Task updated successfully (DESCRIPTION: {description})')
         else:
             print(f'Task with ID {identification} was not found')
 
@@ -190,6 +185,7 @@ class TaskManager:
         task_deleted = self.persistence.get_task_by_id(identification)
         if task_deleted:
             self.persistence.delete_task(task_deleted)
+            print(f'Task deleted successfully (ID: {identification})')
         else:
             print(f'Task with ID {identification} was not found')
 
