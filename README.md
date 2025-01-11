@@ -4,6 +4,7 @@
 
 O **Task Tracker** é uma ferramenta de linha de comando desenvolvida em Python 3.13 para gerenciamento de tarefas. Ele permite criar, atualizar, listar, deletar e alterar o status das tarefas de maneira eficiente diretamente pelo terminal.
 
+Esse projeto foi feito baseado no ROADMAP de Python, confira o escopo do projeto [nesse link](https://roadmap.sh/projects/task-tracker)
 ## Instalação
 
 Siga os passos abaixo para instalar e configurar o projeto:
